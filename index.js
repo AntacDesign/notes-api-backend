@@ -7,7 +7,9 @@ const express = require("express");
 const app = express();
 const logger = require('./loggerMiddleware')
 const cors = require('cors');
-const { request } = require('express');
+const { request, response } = require('express');
+const notFound = request('./middleware/notFount.js')
+const handleError = request('./middleware/handleError.js')
 
 
 app.use(cors())
@@ -87,14 +89,9 @@ app.post("/api/notes", (request, response) => {
   })
 });
 
-app.use ((error,request, response, next)=>{
-  console.error(error)
-  if(error.name === 'CastError'){
-    response.status(400).send({error:'id used is malformed'})
-  }else{
-    response.status(500).end()
-  }
-})
+app.use(notFound)
+
+app.use (handleError)
 const PORT = process.env.PORT  || 3001;
 app.listen(PORT, () => {
   console.log(`Server runing on port ${PORT}`);
