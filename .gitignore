@@ -1,3 +1,4 @@
 node_modules
-vscode
-eslintrc.js
+.vscode
+.eslintrc.js
+.env
