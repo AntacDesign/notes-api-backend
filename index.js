@@ -3,13 +3,16 @@ require('dotenv').config()
 require('./mongo')
 const Note = require('./models/Note')
 
+
+const Sentry = require('@sentry/node');
+const Tracing = require("@sentry/tracing");
 const express = require("express");
 const app = express();
 const logger = require('./loggerMiddleware')
 const cors = require('cors');
 const { request, response } = require('express');
-const notFound = request('./middleware/notFount.js')
-const handleError = request('./middleware/handleError.js')
+const notFound = require('./middleware/notFount.js')
+const handleError = require('./middleware/handleError.js')
 
 
 app.use(cors())
@@ -18,6 +21,24 @@ app.use(logger)
 app.use(express.json());
 
 let notes = [];
+
+Sentry.init({
+  dsn: "https://a2d3f09868c548568085ae9dac5f8dc5@o4504766454235136.ingest.sentry.io/4504766460919808",
+  integrations: [
+    // enable HTTP calls tracing
+    new Sentry.Integrations.Http({ tracing: true }),
+    // enable Express.js middleware tracing
+    new Tracing.Integrations.Express({ app }),
+  ],
+
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
+}); 
+app.use(Sentry.Handlers.requestHandler());
+// TracingHandler creates a trace for every incoming request
+app.use(Sentry.Handlers.tracingHandler());
 
 app.get("/", (request, response) => {
   response.send("<h1>Hello Wolrd</h1>");
@@ -46,7 +67,7 @@ app.get("/api/notes/:id", (request, response,next) => {
 
 app.delete("/api/notes/:id", (request, response,next) => {
   const {id} = request.params
-  Note.findOneAndRemove(id).then(result=>{
+  Note.findOneAndDelete(id).then(result=>{
     response.status(204).end();
   }).catch(err=>next(err))
   response.status(204).end();
@@ -89,9 +110,10 @@ app.post("/api/notes", (request, response) => {
   })
 });
 
+app.use(Sentry.Handlers.errorHandler());
 app.use(notFound)
-
 app.use (handleError)
+
 const PORT = process.env.PORT  || 3001;
 app.listen(PORT, () => {
   console.log(`Server runing on port ${PORT}`);
