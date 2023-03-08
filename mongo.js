@@ -14,3 +14,6 @@ mongoose.connect(connectionString,{
         console.error(error)
     })
 mongoose.set('strictQuery', false);
+process.on('uncaughtException',()=>{
+    mongoose.connection.disconnect()
+})

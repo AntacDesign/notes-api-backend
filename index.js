@@ -19,6 +19,7 @@ app.use(cors())
 app.use(logger)
 
 app.use(express.json());
+app.use('/images',express.static('images'))
 
 let notes = [];
 
