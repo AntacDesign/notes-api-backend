@@ -1,12 +1,15 @@
 const mongoose = require('mongoose')
 
-const connectionString = process.env.MONGO_DB_URI
+const {MONGO_DB_URI,MONGO_DB_URI_TEST,NODE_ENV} = process.env
+
+const connectionString = NODE_ENV === 'test' 
+? MONGO_DB_URI_TEST
+: MONGO_DB_URI
+
+mongoose.set('strictQuery', true);
 
 //conexion a mongodb
-mongoose.connect(connectionString,{
-    useNewUrlParser:true,
-    useUnifiedTopology:true
-})
+mongoose.connect(connectionString)
     .then(()=>{
         console.log('Database connected')
     })

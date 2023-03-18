@@ -116,6 +116,8 @@ app.use(notFound)
 app.use (handleError)
 
 const PORT = process.env.PORT  || 3001;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server runing on port ${PORT}`);
 });
+
+module.exports = {app,server}

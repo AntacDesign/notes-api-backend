@@ -5,17 +5,19 @@
   "main": "index.js",
   "scripts": {
     "lint": "lint .",
-    "dev": "nodemon index.js",
-    "start": "node index.js",
-    "test": "jest --verbose"
+    "dev": "NODE_ENV=development nodemon index.js",
+    "start": "NODE_ENV=production node index.js",
+    "test": "NODE_ENV=test  jest --verbose --silent tests/notes.test.js",
+    "test:watch":"npm run test -- --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "jest": "^29.4.3",
+    "jest": "29.4.3",
     "nodemon": "2.0.20",
-    "standard": "17.0.0"
+    "standard": "17.0.0",
+    "supertest": "6.3.3"
   },
   "dependencies": {
     "@sentry/node": "7.40.0",
@@ -27,11 +29,11 @@
   },
   "eslintConig": {
     "extends": "./node_modules/standard/eslintrc.json",
-    "env":{
-      "jest":true
+    "env": {
+      "jest": true
     }
   },
-  "jest":{
-    "testEnvironment":"node"
+  "jest": {
+    "testEnvironment": "node"
   }
 }
