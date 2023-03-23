@@ -62,6 +62,13 @@ test('note without content is not added', async()=>{
     expect(response.body).toHaveLength(initialNotes.length)
 })
 
+test('a note can be deleted', async()=>{
+    const {response} = getAllcontentFromNotes()
+    const {body:notes} = response
+    const noteToDelete=note[0]
+    await api.delete(`api/notes/${noteToDelete.id}`)
+})
+
 afterAll(()=>{
     mongoose.connection.close()
     server.close()

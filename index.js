@@ -45,10 +45,9 @@ app.get("/", (request, response) => {
   response.send("<h1>Hello Wolrd</h1>");
 });
 
-app.get("/api/notes", (request, response) => {
-  Note.find({}).then(notes=>{
-    response.json(notes);
-  })
+app.get("/api/notes", async (request, response) => {
+  const notes = await Note.find({})
+    return response.json(notes);
 });
 
 app.get("/api/notes/:id", (request, response,next) => {
@@ -90,7 +89,7 @@ app.put("/api/notes/:id", (request, response,next) => {
 });
 
 /* crear post */
-app.post("/api/notes", (request, response) => {
+app.post("/api/notes", async (request, response) => {
   const note = request.body;
 
   if (!note.content) {
@@ -106,9 +105,16 @@ app.post("/api/notes", (request, response) => {
   } )
 
   //guardando nota
-  newNote.save().then(savedNote=>{
+/*   newNote.save().then(savedNote=>{
     response.status(200).json(savedNote)
-  })
+  }) */
+  try{
+    const savedNote = await newNote.save()
+    reponse.json(savedNote)
+  }catch(error){
+    next(error)
+  }
+
 });
 
 app.use(Sentry.Handlers.errorHandler());
